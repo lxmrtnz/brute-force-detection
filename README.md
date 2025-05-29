@@ -63,23 +63,20 @@ After creating the rule it was triggered instantly. The **`Brute Force Attempt D
  | 183.179.77.58  | ishan-windows-p                                                                               | LoginFailed  | 1830     |
  | 45.227.253.51  | kuda-hunt                                                                                     | LoginFailed  | 1830     |
 
-### 3. Investigate if the attack was successful on the targeted hosts. 
-To assess the impact further we need to investigate if any of these brute force attacks were successful.
+### 3. Search `DeviceLogonEvents` for successful logins. 
+Searched for any evidence where any of the IP's successfully breached any of the hosts. There were 87 instances where the brute force attack from `RemoteIP 10.0.0.8` was successful on `Host blue-programmatic-fix-drea.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`.
+
+**Query used to locate events:**
 
 ```kql
-let FailedLogons = DeviceLogonEvents
-    | where ActionType == "LogonFailed"
-    | where TimeGenerated >= ago(5h)
-    | project TimeGenerated, RemoteIP, DeviceName, AccountName, ActionType;
-
-FailedLogons
-| join kind=inner FailedLogons on RemoteIP, DeviceName
-| where TimeGenerated1 between (TimeGenerated .. TimeGenerated + 5h)
-| summarize Attempts = count() by RemoteIP, DeviceName, ActionType
-| where Attempts >= 1500
-| project RemoteIP, DeviceName, ActionType, Attempts  
-| order by Attempts desc
+DeviceLogonEvents
+| where RemoteIP in ("10.0.0.8", "186.10.23.226", "193.37.69.105", "43.131.224.248", "183.179.77.58")
+| where DeviceName in ("pham-edr", "abe-mde-est", "ishan-windows-p", "kuda-hunt", "blue-programmatic-fix-drea.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net",)
+| where ActionType == "LogonSuccess"
 ```
+
+<img width="1212" alt="image" src="https://github.com/user-attachments/assets/d3cf65cf-6509-49d4-a799-c5cef46ae655">
+
 
 
 
