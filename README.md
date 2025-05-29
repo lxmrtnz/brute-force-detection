@@ -60,6 +60,9 @@ After creating the rule it was triggered instantly. The **`Brute Force Attempt D
 ### 3. Search `DeviceLogonEvents` for successful logins. 
 Searched for any evidence where any of the IP's successfully breached any of the hosts. There were 87 instances where the brute force attack from `RemoteIP 10.0.0.8` was successful on `Host blue-programmatic-fix-drea.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`.
 
+However, upon further review, `10.0.0.8` was identified as an `internal jump host (NAT gateway)` shared across multiple systems and users.
+The high number of failed login attempts followed by successful logins is a known pattern for this IP due to centralized authentication routing. As such, these events are attributed to normal user activity and considered a false positive in the context of brute-force detection.
+
 **Query used to locate events:**
 
 ```kql
