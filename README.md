@@ -19,8 +19,8 @@ The security team detected a spike in failed login attempts from several remote 
 
 ## Steps Taken
 
-### 1. Create the Alert Rule (Brute Force Attempt Detection)
-Created the Alert rule in Microsoft Sentinel and set Mitre ATT&CK Framework categories based on the query. This rule will be set to automatically create an incident if the rule is triggered.
+### 1. Create the Alert Rule
+Created the Alert rule **`Brute Force Attempt Detection - lxmrtnz`** in Microsoft Sentinel and set Mitre ATT&CK Framework categories based on the query. This rule will be set to automatically create an incident if the rule is triggered.
 
 **Mitre ATT&CK Framework Categories**
 ```
@@ -49,8 +49,41 @@ FailedLogons
 | project RemoteIP, DeviceName, ActionType, Attempts  
 | order by Attempts desc
 ```
-<img width="1212" alt="image" src="https://github.com/user-attachments/assets/3fd2c2c0-b2be-4b61-9e66-0506bda5c5b0">
 
-### 2. Gather relevant evidence and assess impact
+### 2. Gather relevant evidence
+After creating the rule it was triggered instantly. The **`Brute Force Attempt Detection - lxmrtnz`** incident was triggered from 5 different IP addresses against 5 different hosts.
+
+<img width="1212" alt="image" src="https://github.com/user-attachments/assets/0b5c3e47-69ac-4c3c-9387-ce0add64a920">
+
+ | RemoteIP       | DeviceName                                                                                    | ActionType   | Attempts |
+ |----------------|-----------------------------------------------------------------------------------------------|--------------|----------|
+ | 10.0.0.8       | blue-programmatic-fix-drea.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net                | LoginFailed  | 5151     |
+ | 193.37.69.105  | pham-edr                                                                                      | LoginFailed  | 3403     |
+ | 43.131.224.248 | abe-mde-est                                                                                   | LoginFailed  | 2485     |
+ | 183.179.77.58  | ishan-windows-p                                                                               | LoginFailed  | 1830     |
+ | 45.227.253.51  | kuda-hunt                                                                                     | LoginFailed  | 1830     |
+
+### 3. Investigate if the attack was successful on the targeted hosts. 
+To assess the impact further we need to investigate if any of these brute force attacks were successful.
+
+```kql
+let FailedLogons = DeviceLogonEvents
+    | where ActionType == "LogonFailed"
+    | where TimeGenerated >= ago(5h)
+    | project TimeGenerated, RemoteIP, DeviceName, AccountName, ActionType;
+
+FailedLogons
+| join kind=inner FailedLogons on RemoteIP, DeviceName
+| where TimeGenerated1 between (TimeGenerated .. TimeGenerated + 5h)
+| summarize Attempts = count() by RemoteIP, DeviceName, ActionType
+| where Attempts >= 1500
+| project RemoteIP, DeviceName, ActionType, Attempts  
+| order by Attempts desc
+```
+
+
+
+
+ 
 
 
