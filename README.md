@@ -51,6 +51,6 @@ FailedLogons
 ```
 <img width="1212" alt="image" src="https://github.com/user-attachments/assets/3fd2c2c0-b2be-4b61-9e66-0506bda5c5b0">
 
-### 2. Gather relivant evidence and assess impact
+### 2. Gather relevant evidence and assess impact
 
 
