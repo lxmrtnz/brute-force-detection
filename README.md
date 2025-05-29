@@ -55,13 +55,7 @@ After creating the rule it was triggered instantly. The **`Brute Force Attempt D
 
 <img width="1212" alt="image" src="https://github.com/user-attachments/assets/0b5c3e47-69ac-4c3c-9387-ce0add64a920">
 
- | RemoteIP       | DeviceName                                                                                    | ActionType   | Attempts |
- |----------------|-----------------------------------------------------------------------------------------------|--------------|----------|
- | 10.0.0.8       | blue-programmatic-fix-drea.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net                | LoginFailed  | 5151     |
- | 193.37.69.105  | pham-edr                                                                                      | LoginFailed  | 3403     |
- | 43.131.224.248 | abe-mde-est                                                                                   | LoginFailed  | 2485     |
- | 183.179.77.58  | ishan-windows-p                                                                               | LoginFailed  | 1830     |
- | 45.227.253.51  | kuda-hunt                                                                                     | LoginFailed  | 1830     |
+<img width="1212" alt="image" src="https://github.com/user-attachments/assets/15ba9b72-e5ec-4ef8-a113-d505d6e3a9cc">
 
 ### 3. Search `DeviceLogonEvents` for successful logins. 
 Searched for any evidence where any of the IP's successfully breached any of the hosts. There were 87 instances where the brute force attack from `RemoteIP 10.0.0.8` was successful on `Host blue-programmatic-fix-drea.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`.
