@@ -50,6 +50,8 @@ FailedLogons
 | order by Attempts desc
 ```
 
+---
+
 ### 2. Gather relevant evidence
 After creating the rule it was triggered instantly. The **`Brute Force Attempt Detection - lxmrtnz`** incident was triggered from 5 different IP addresses against 5 different hosts.
 
@@ -57,10 +59,12 @@ After creating the rule it was triggered instantly. The **`Brute Force Attempt D
 
 <img width="1212" alt="image" src="https://github.com/user-attachments/assets/15ba9b72-e5ec-4ef8-a113-d505d6e3a9cc">
 
-### 3. Search `DeviceLogonEvents` for successful logins. 
-Searched for any evidence where any of the IP's successfully breached any of the hosts. There were 87 instances where the brute force attack from `RemoteIP 10.0.0.8` was successful on `Host blue-programmatic-fix-drea.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`.
+---
 
-However, upon further review, `10.0.0.8` was identified as an `internal jump host (NAT gateway)` shared across multiple systems and users.
+### 3. Search `DeviceLogonEvents` for successful logins. 
+Searched for any evidence where any of the IP's successfully breached any of the hosts. There were 87 instances where the brute force attack from RemoteIP **`10.0.0.8`** was successful on Host **`blue-programmatic-fix-drea.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`**.
+
+However, upon further review, **`10.0.0.8`** was identified as an **`internal jump host (NAT gateway)`** shared across multiple systems and users.
 The high number of failed login attempts followed by successful logins is a known pattern for this IP due to centralized authentication routing. As such, these events are attributed to normal user activity and considered a false positive in the context of brute-force detection.
 
 **Query used to locate events:**
@@ -73,6 +77,24 @@ DeviceLogonEvents
 ```
 
 <img width="1212" alt="image" src="https://github.com/user-attachments/assets/d3cf65cf-6509-49d4-a799-c5cef46ae655">
+
+---
+
+### Summary
+Developed and deployed a custom analytic rule in Microsoft Sentinel named **`Brute Force Attempt Detection - lxmrtnz`**, designed to detect high-volume failed logon attempts from the same IP and device within a 5-hour timeframe. This rule is mapped to multiple MITRE ATT&CK techniques, including brute force and account discovery. Once active, the rule immediately generated an incident involving five external IPs targeting five internal hosts.
+
+To assess the potential impact, I pivoted to **`DeviceLogonEvents`** and discovered 87 successful logins from RemoteIP **`10.0.0.8`** to the host **`blue-programmatic-fix-drea...cloudapp.net`***, raising concern for a successful brute-force compromise. However, deeper investigation revealed that **`10.0.0.8`** is a known **`internal NAT gateway (jump host)`**, frequently used for centralized authentication across environments. The spike in failed logons followed by successful authentication is a recognized and expected pattern due to its role in routing user traffic.
+
+Based on this context, I determined that the alert was a false positive, and no malicious activity occurred. This case reinforced the importance of baselining internal infrastructure behavior to reduce noise in brute-force alerting logic.
+
+---
+
+### 4. Response Taken
+- AV scan initiated across all impacted hosts using Microsoft Defender for Endpoint (MDE).
+- Updated NSG configurations to block RDP access from public IP addresses.
+- Proposed and submitted corporate policy revision to require all Azure VMs to disallow public-facing RDP unless explicitly justified and approved.
+
+---
 
 
 
